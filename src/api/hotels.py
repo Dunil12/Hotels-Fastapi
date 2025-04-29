@@ -8,11 +8,6 @@ from first_project.src.schemas.hotels import Hotel, HotelPatch
 
 router = APIRouter(prefix="/hotels", tags=["Отели"])
 
-
-@router.get("/")
-def func():
-    return "HelloWorld!!!"
-
 @router.get("",
             summary="Получение отелейй по фильтрам title и location",
             description="<h1>Документация к ручке get_hotel</h1>",)
@@ -34,24 +29,37 @@ async def get_hotel(
 
 @router.post("")
 async def create_hotel(
-        hotel_data: Hotel
+    hotel_data: Hotel
 ):
     async with (async_session_maker() as session):
-        # new_hotel =
         await HotelsRepository(session).add(hotel_data)
         await session.commit()
 
     return {"status": "OK"}
 
-@router.patch("/{hotel_id}")
-def change_data(
-    hotel_id : int,
-    hotel_data: HotelPatch
+@router.delete("/{hotel_id}")
+async def delete_hotel(
+    hotel_id: int,
+    title: str | None = Query(None),
+    location: str | None = Query(None),
 ):
-    global hotels
-    for hotel in hotels:
-        if hotel["id"] == hotel_id:
-            hotel["title"] = hotel_data.title
-            hotel["location"] = hotel_data.location
-            return {"status": "ok"}
-    return {"status": "none"}
+    async with (async_session_maker() as session):
+        await HotelsRepository(session).delete(id=hotel_id, title=title, location=location)
+        await session.commit()
+    return {"status" : "OK"}
+
+
+@router.patch("/{hotel_id}")
+async def change_hotel(
+    new_hotel_data: HotelPatch,
+    hotel_id: int,
+    title: str | None = Query(None),
+    location: str | None = Query(None),
+):
+    if hotel_id or title or location:
+        async with (async_session_maker() as session):
+            await HotelsRepository(session).change(new_hotel_data, id=hotel_id, title=title, location=location)
+            await session.commit()
+        return {"status" : "OK"}
+    else:
+        return {"status" : "Fill one or more required fields"}

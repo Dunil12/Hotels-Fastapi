@@ -37,12 +37,12 @@ class HotelsRepository(BaseRepository):
     
         return hotels
 
-    async def add(
-            self,
-            hotel_data,
-    ):
-        add_hotel_stmt = insert(table=self.model).values(**hotel_data.model_dump())
-        print(hotel_data)
-        print(add_hotel_stmt.compile(compile_kwargs={"literal_binds": True}))
-
-        await self.session.execute(add_hotel_stmt)
+    # async def add(
+    #         self,
+    #         hotel_data,
+    # ):
+    #     add_hotel_stmt = insert(table=self.model).values(**hotel_data.model_dump())
+    #     print(hotel_data)
+    #     print(add_hotel_stmt.compile(compile_kwargs={"literal_binds": True}))
+    #
+    #     await self.session.execute(add_hotel_stmt)

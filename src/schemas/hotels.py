@@ -7,5 +7,3 @@ class Hotel(BaseModel):
 class HotelPatch(BaseModel):
     title: str | None = Field(None)
     location: str | None = Field(None)
-
-

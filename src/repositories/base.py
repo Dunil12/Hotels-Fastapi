@@ -1,5 +1,6 @@
-from sqlalchemy import select, insert
+from sqlalchemy import select, insert, update, delete
 from first_project.src.schemas.hotels import Hotel
+from pydantic import BaseModel
 
 class BaseRepository:
     model = None
@@ -17,9 +18,39 @@ class BaseRepository:
         result = await self.session.execute(query)
         return result.scalars().one_or_none()
 
-    async def add(self, *args, **kwargs): # добавить вместо hotel_data -> BaseModel sqlAlchemy (схема)
-        # add_hotel_stmt = insert(table=self.model).values(hotel_data.model_dump())
-        # print(add_hotel_stmt.compile(compile_kwargs={"literal_binds": True}))
-        # await self.session.execute(add_hotel_stmt)
-        # await self.session.commit()
+    async def change(self, data: BaseModel, **filter_by):
+        filter_by = {k: v for k, v in filter_by.items() if v is not None}
+        data_db = await self.get_one_or_none(**filter_by)
+        print("filter_by = ", filter_by)
+        print("data_db = ", data_db)
+        if data_db:
+            change_data_stmt = update(table=self.model).filter_by(**filter_by).values(**data.model_dump())
+            print(change_data_stmt.compile(compile_kwargs={"literal_binds": True}))
+            await self.session.execute(change_data_stmt)
+            return {"status": "200"}
+        else:
+            print("запись по входящим параметрам не найдена")
+            return {"status" : "404"}
+
+    async def delete(self, **filter_by):
+        filter_by = {k: v for k, v in filter_by.items() if v is not None}
+        data_db = await self.get_one_or_none(**filter_by)
+
+        if data_db:
+            change_data_stmt = delete(table=self.model).filter_by(**filter_by)
+            print(change_data_stmt.compile(compile_kwargs={"literal_binds": True}))
+            await self.session.execute(change_data_stmt)
+            return {"status": "200"}
+        else:
+            print("запись по входящим параметрам не найдена")
+            return {"status" : "404"}
+
+    async def add(self, data: BaseModel):
+        add_data_stmt = (insert(table=self.model).values(**data.model_dump())
+                         .returning(self.model.id,
+                                    self.model.title,
+                                    self.model.location))
+        print(add_data_stmt.compile(compile_kwargs={"literal_binds": True}))
+        await self.session.execute(add_data_stmt)
+        # затем должен идти коммит в ручке
         return {"status": "OK"}
