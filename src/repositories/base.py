@@ -37,9 +37,9 @@ class BaseRepository:
         data_db = await self.get_one_or_none(**filter_by)
 
         if data_db:
-            change_data_stmt = delete(table=self.model).filter_by(**filter_by)
-            print(change_data_stmt.compile(compile_kwargs={"literal_binds": True}))
-            await self.session.execute(change_data_stmt)
+            delete_data_stmt = delete(table=self.model).filter_by(**filter_by)
+            print(delete_data_stmt.compile(compile_kwargs={"literal_binds": True}))
+            await self.session.execute(delete_data_stmt)
             return {"status": "200"}
         else:
             print("запись по входящим параметрам не найдена")
