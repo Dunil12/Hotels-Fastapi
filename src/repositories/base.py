@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 class BaseRepository:
     model = None
+    schema: BaseModel = None
 
     def __init__(self, session):
         self.session = session
@@ -11,12 +12,17 @@ class BaseRepository:
     async def get_all(self, *args, **kwargs):
         query = select(self.model)
         result = await self.session.execute(query)
-        return result.scalars().all()
+        return [self.schema.model_validate(model, from_attributes=True) for model in result.scalars().all()]
 
     async def get_one_or_none(self, **filter_by):
         query = select(self.model).filter_by(**filter_by)
+        print(query.compile(compile_kwargs={"literal_binds": True}))
         result = await self.session.execute(query)
-        return result.scalars().one_or_none()
+        model = result.scalars().one_or_none()
+        if model is None:
+            return None
+        else:
+            return self.schema.model_validate(model, from_attributes=True)
 
     async def change(self, data: BaseModel, **filter_by):
         filter_by = {k: v for k, v in filter_by.items() if v is not None}
@@ -24,10 +30,11 @@ class BaseRepository:
         print("filter_by = ", filter_by)
         print("data_db = ", data_db)
         if data_db:
-            change_data_stmt = update(table=self.model).filter_by(**filter_by).values(**data.model_dump())
+            change_data_stmt = update(table=self.model).filter_by(**filter_by).values(**data.model_dump()).returning(self.model)
             print(change_data_stmt.compile(compile_kwargs={"literal_binds": True}))
-            await self.session.execute(change_data_stmt)
-            return {"status": "200"}
+            result = await self.session.execute(change_data_stmt)
+            model = result.scalars().one()
+            return model
         else:
             print("запись по входящим параметрам не найдена")
             return {"status" : "404"}
@@ -46,11 +53,8 @@ class BaseRepository:
             return {"status" : "404"}
 
     async def add(self, data: BaseModel):
-        add_data_stmt = (insert(table=self.model).values(**data.model_dump())
-                         .returning(self.model.id,
-                                    self.model.title,
-                                    self.model.location))
+        add_data_stmt = insert(table=self.model).values(**data.model_dump()).returning(self.model)
         print(add_data_stmt.compile(compile_kwargs={"literal_binds": True}))
-        await self.session.execute(add_data_stmt)
-        # затем должен идти коммит в ручке
-        return {"status": "OK"}
+        result = await self.session.execute(add_data_stmt)
+        model = result.scalars().one()
+        return self.schema.model_validate(model, from_attributes=True)

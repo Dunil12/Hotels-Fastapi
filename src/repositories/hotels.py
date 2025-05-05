@@ -3,11 +3,12 @@ from sqlalchemy import select, insert
 
 from first_project.src.models.hotels import HotelsOrm
 from first_project.src.repositories.base import BaseRepository
-
+from first_project.src.schemas.hotels import HotelPatch
 
 
 class HotelsRepository(BaseRepository):
     model = HotelsOrm
+    schema = Hotel
 
     async def get_all(
             self,
@@ -15,7 +16,7 @@ class HotelsRepository(BaseRepository):
             location,
             limit,
             offset,
-    ):
+    ) -> list[Hotel]:
         query = select(HotelsOrm)
 
         if location:
@@ -35,7 +36,7 @@ class HotelsRepository(BaseRepository):
         print(query.compile(compile_kwargs={"literal_binds": True}))
         hotels = result.scalars().all()
     
-        return hotels
+        return [Hotel.model_validate(hotel) for hotel in hotels]
 
     # async def add(
     #         self,

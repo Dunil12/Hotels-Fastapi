@@ -4,7 +4,7 @@ from first_project.src.api.dependencies import PaginationDep
 from first_project.src.database import async_session_maker
 from first_project.src.models.hotels import HotelsOrm
 from first_project.src.repositories.hotels import HotelsRepository
-from first_project.src.schemas.hotels import Hotel, HotelPatch
+from first_project.src.schemas.hotels import HotelAdd, HotelPatch
 
 router = APIRouter(prefix="/hotels", tags=["Отели"])
 
@@ -26,22 +26,24 @@ async def get_all_hotel(
             offset=offset
         )
 
-@router.get("/{hotel_id}", summary="Получение отелейй по фильтрам title и location",)
+@router.get("/{hotel_id}", summary="Получение отелей по id",)
 async def get_hotel(hotel_id: int):
     async with async_session_maker() as session:
+        print("!")
         return await HotelsRepository(session).get_one_or_none(**{"id" : hotel_id})
-
 
 
 @router.post("")
 async def create_hotel(
-    hotel_data: Hotel
+    hotel_data: HotelAdd
 ):
     async with (async_session_maker() as session):
-        await HotelsRepository(session).add(hotel_data)
+        hotel = await HotelsRepository(session).add(hotel_data)
         await session.commit()
+        print(hotel)
 
     return {"status": "OK"}
+
 
 @router.delete("/{hotel_id}")
 async def delete_hotel(
@@ -64,8 +66,9 @@ async def change_hotel(
 ):
     if hotel_id or title or location:
         async with (async_session_maker() as session):
-            await HotelsRepository(session).change(new_hotel_data, id=hotel_id, title=title, location=location)
+            hotel = await HotelsRepository(session).change(new_hotel_data, id=hotel_id, title=title, location=location)
             await session.commit()
-        return {"status" : "OK"}
+            print(hotel)
+        return hotel
     else:
         return {"status" : "Fill one or more required fields"}
