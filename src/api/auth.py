@@ -1,5 +1,10 @@
-from fastapi import Query, APIRouter, HTTPException, Response, Request
+from typing import Annotated
 
+import jwt
+from fastapi import Query, APIRouter, HTTPException, Response, Request, Depends, status
+from fastapi.security import OAuth2PasswordBearer
+
+from first_project.src.api.dependencies import UserIdDep, get_token
 from first_project.src.database import async_session_maker
 from first_project.src.repositories.users import UsersRepository
 from first_project.src.schemas.users import UserRequestAdd, UserAdd
@@ -8,6 +13,13 @@ from first_project.src.services.auth import AuthService
 router = APIRouter(prefix="/auth", tags=["Аутентификация и авторизация"])
 
 
+@router.get("/test_user_jwt", summary="тест получения пользовтеля из JWT токена")
+async def get_current_user(
+        user_id: UserIdDep
+):
+    async with (async_session_maker() as session):
+        user = await UsersRepository(session).get_one_or_none(id=user_id)
+        return user
 
 
 @router.post("/register", summary="Регистрация клиента")
@@ -45,10 +57,10 @@ async def login_user(
         await session.commit()
         return {"access_token": access_token}
 
-@router.get("/only_auth", summary="тест")
-async def only_auth(
-    request: Request
+
+@router.post("/logout")
+async def logout(
+        response: Response,
 ):
-    access_token = request.cookies.get("access_token") or None
-    print(access_token)
-    return access_token
+    response.delete_cookie("access_token")
+    return {"status": "OK"}
