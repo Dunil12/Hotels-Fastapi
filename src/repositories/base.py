@@ -19,10 +19,8 @@ class BaseRepository:
         print(query.compile(compile_kwargs={"literal_binds": True}))
         result = await self.session.execute(query)
         model = result.scalars().one_or_none()
-        if model is None:
-            return None
-        else:
-            return self.schema.model_validate(model, from_attributes=True)
+        return self.schema.model_validate(model, from_attributes=True) if model is not None else None
+
 
     async def change(self, data: BaseModel, **filter_by):
         filter_by = {k: v for k, v in filter_by.items() if v is not None}
@@ -34,7 +32,7 @@ class BaseRepository:
             print(change_data_stmt.compile(compile_kwargs={"literal_binds": True}))
             result = await self.session.execute(change_data_stmt)
             model = result.scalars().one()
-            return model
+            return self.schema.model_validate(model, from_attributes=True) if model is not None else None
         else:
             print("запись по входящим параметрам не найдена")
             return {"status" : "404"}

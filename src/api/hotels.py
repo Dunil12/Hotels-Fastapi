@@ -29,7 +29,6 @@ async def get_all_hotel(
 @router.get("/{hotel_id}", summary="Получение отелей по id",)
 async def get_hotel(hotel_id: int):
     async with async_session_maker() as session:
-        print("!")
         return await HotelsRepository(session).get_one_or_none(**{"id" : hotel_id})
 
 
