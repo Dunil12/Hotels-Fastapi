@@ -10,4 +10,3 @@ class Hotel(HotelAdd):
 class HotelPatch(BaseModel):
     title: str
     location: str
-    # location: str | None = Field(None)

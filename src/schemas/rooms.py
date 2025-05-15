@@ -5,7 +5,7 @@ class RoomAdd(BaseModel):
     hotel_id: int
     title: str
     price: int
-    description:str | None
+    description:str | None = None
     quantity: int
 
 class RoomPatch(BaseModel):
