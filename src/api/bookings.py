@@ -1,8 +1,6 @@
 from fastapi import Query, APIRouter
 
 from first_project.src.api.dependencies import DBDep, UserIdDep, PaginationDep
-from first_project.src.models.bookings import BookingsOrm
-from first_project.src.repositories.bookings import BookingsRepository
 from first_project.src.schemas.bookings import BookingAdd, BookingAddRequest
 
 router = APIRouter(prefix="/bookings", tags=["Бронирование"])
@@ -24,7 +22,6 @@ async def get_my_bookings(
     user_id: UserIdDep,
 ):
     return await db.bookings.get_all(user_id=user_id)
-
 
 
 @router.post("")
