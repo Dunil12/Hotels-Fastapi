@@ -19,3 +19,7 @@ class RoomsRepository(BaseRepository):
         rooms_ids_to_get = rooms_ids_for_booking(hotel_id=hotel_id, date_from=date_from, date_to=date_to)
         return await self.get_filtered(RoomsOrm.id.in_(rooms_ids_to_get))
 
+
+    # async def delete_batch(self, *filter, **filter_by):
+
+

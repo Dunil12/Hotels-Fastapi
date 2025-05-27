@@ -12,3 +12,4 @@ class RoomsOrm(Base):
     price: Mapped[int]
     description: Mapped[str | None]
     quantity: Mapped[int]
+    # facilities_ids: Mapped[list[int]] | None

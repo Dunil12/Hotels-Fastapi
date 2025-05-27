@@ -59,16 +59,19 @@ class HotelsRepository(BaseRepository):
             .filter(RoomsOrm.id.in_(rooms_ids_to_get))
         )
 
+        query = select(HotelsOrm).filter(HotelsOrm.id.in_(hotels_ids_to_get))
+
         if title:
-            hotels_ids_to_get = (hotels_ids_to_get.filter(HotelsOrm.title.contains(title)))
+            query = (query.filter(HotelsOrm.title.contains(title)))
 
         if location:
-            hotels_ids_to_get = (hotels_ids_to_get.filter(HotelsOrm.location.contains(location)))
+            query = (query.filter(HotelsOrm.location.contains(location)))
 
-        hotels_ids_to_get = (hotels_ids_to_get
+        query = (query
                 .limit(limit)
                 .offset(offset))
 
-        print(hotels_ids_to_get.compile(compile_kwargs={"literal_binds": True}))
+        result = await self.session.execute(query)
+        hotels = result.scalars().all()
 
-        return await self.get_filtered(HotelsOrm.id.in_(hotels_ids_to_get))
+        return [Hotel.model_validate(hotel, from_attributes=True) for hotel in hotels]

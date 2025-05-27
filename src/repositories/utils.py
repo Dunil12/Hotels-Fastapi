@@ -1,8 +1,6 @@
 from datetime import date
-
 from sqlalchemy import select, func
 
-from first_project.src.database import engine
 from first_project.src.models.bookings import BookingsOrm
 from first_project.src.models.rooms import RoomsOrm
 
@@ -45,8 +43,4 @@ def rooms_ids_for_booking(
                 rooms_left_table.c.room_id.in_(select(rooms_ids_for_hotel)))
     )
 
-
-    print(rooms_ids_to_get.compile(bind=engine, compile_kwargs={"literal_binds": True}))
-
     return rooms_ids_to_get
-    # return await self.get_filtered(RoomsOrm.id.in_(rooms_ids_to_get))
