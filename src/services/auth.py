@@ -1,13 +1,9 @@
+import jwt
 from datetime import timedelta, datetime, timezone
-
-from jwt import InvalidTokenError
 from passlib.context import CryptContext
+from fastapi import Query, APIRouter, HTTPException
 
 from first_project.src.config import settings
-
-import jwt
-from fastapi import Query, APIRouter, HTTPException
-from fastapi.security import OAuth2PasswordBearer
 
 router = APIRouter(prefix="/auth", tags=["Аутентификация и авторизация"])
 

@@ -14,7 +14,7 @@ async def get_rooms_by_date(
         hotel_id: int,
         date_from: date = Query(example="2025-05-10"),
         date_to: date = Query(example="2025-05-11"),
-) -> list[Room] | None:
+):
     return await db.rooms.get_filtered_by_date(hotel_id=hotel_id, date_from=date_from, date_to=date_to)
 
 
@@ -23,7 +23,7 @@ async def get_room_by_id(
         db: DBDep,
         hotel_id: int,
         room_id: int,
-) -> Room | None:
+):
     return await db.rooms.get_one_or_none(id=room_id, hotel_id=hotel_id)
 
 

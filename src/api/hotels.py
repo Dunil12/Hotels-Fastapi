@@ -41,12 +41,24 @@ async def get_hotel(
     return await db.hotels.get_one_or_none(**{"id" : hotel_id})
 
 
+# @router.post("")
+# async def create_hotel(
+#     db: DBDep,
+#     hotel_data: HotelAdd
+# ):
+#     hotel = await db.hotels.add(hotel_data)
+#     await db.commit()
+#     print(hotel)
+#
+#     return {"status": "OK"}
+
 @router.post("")
-async def create_hotel(
+async def create_hotels(
     db: DBDep,
-    hotel_data: HotelAdd
+    hotel_data: list[HotelAdd]
 ):
-    hotel = await db.hotels.add(hotel_data)
+    print("hotel_data = ", hotel_data)
+    hotel = await db.hotels.add_batch(hotel_data)
     await db.commit()
     print(hotel)
 

@@ -1,12 +1,6 @@
-from typing import Annotated
+from fastapi import Query, APIRouter, HTTPException, Response, Body
 
-import jwt
-from fastapi import Query, APIRouter, HTTPException, Response, Request, Depends, status, Body
-from fastapi.security import OAuth2PasswordBearer
-
-from first_project.src.api.dependencies import UserIdDep, get_token, DBDep
-from first_project.src.database import async_session_maker
-from first_project.src.repositories.users import UsersRepository
+from first_project.src.api.dependencies import UserIdDep, DBDep
 from first_project.src.schemas.users import UserRequestAdd, UserAdd
 from first_project.src.services.auth import AuthService
 

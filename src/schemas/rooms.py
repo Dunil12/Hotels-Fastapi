@@ -1,4 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+
+from first_project.src.schemas.facility import Facility
 
 
 class RoomAddRequest(BaseModel):
@@ -6,8 +8,8 @@ class RoomAddRequest(BaseModel):
     price: int
     description:str | None = None
     quantity: int
-    facilities_ids_to_add: list[int] | None = [1,2,3]
-    facilities_ids_to_remove: list[int] | None = None
+    facilities_ids_to_add: list[int] = []
+    facilities_ids_to_remove: list[int] = []
 
 class RoomAdd(BaseModel):
     title: str
@@ -18,3 +20,9 @@ class RoomAdd(BaseModel):
 
 class Room(RoomAdd):
     id: int
+
+class RoomWithRels(Room):
+    facilities: list[Facility]
+
+    class Config:
+        orm_mode = True
