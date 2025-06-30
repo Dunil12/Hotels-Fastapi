@@ -1,14 +1,9 @@
-from first_project.src.database import async_session_maker, async_session_maker_null_pool
 from first_project.src.schemas.hotels import HotelAdd
-from first_project.src.utils.db_manager import DBManager
+from first_project.tests.conftest import db
 
-
-async def test_create_hotel():
+async def test_create_hotel(db):
     hotel_data = HotelAdd(title="title", location="location")
 
-    async with DBManager(session_factory=async_session_maker_null_pool) as db:
-        new_hotel = await db.hotels.add(hotel_data)
-        await db.commit()
-    print(f"{new_hotel=}")
-    print("!!!")
+    new_hotel = await db.hotels.add(hotel_data)
+    await db.commit()
     assert new_hotel

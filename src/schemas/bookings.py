@@ -12,6 +12,11 @@ class BookingAdd(BookingAddRequest):
     user_id: int
     price: int
 
+class BookingPatch(BaseModel):
+    date_from: date | None
+    date_to: date | None
+    price: int | None
+
 class Booking(BookingAdd):
     id: int
 
