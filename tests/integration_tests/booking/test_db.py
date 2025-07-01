@@ -1,7 +1,6 @@
 from datetime import date
 
-from first_project.src.api.dependencies import UserIdDep
-from first_project.src.schemas.bookings import BookingAdd, BookingAddRequest, BookingPatch
+from first_project.src.schemas.bookings import BookingAdd, BookingPatch
 from first_project.tests.conftest import db
 
 
@@ -27,7 +26,6 @@ async def test_booking_crud(db):
                                     price=50)
     new_booking = await db.bookings.change(new_booking_data, user_id=user_id, room_id=room_id)
 
-    print("new_booking = ",new_booking)
     assert new_booking.price == 50
     assert new_booking.date_from == date(year=2024, month=8, day=1)
     assert new_booking.date_to == date(year=2024, month=8, day=16)

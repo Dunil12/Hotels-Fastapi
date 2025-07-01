@@ -26,7 +26,6 @@ async def register_user(
     user = await db.users.add(new_user_data)
     if user:
         await db.commit()
-        print(user)
         return {"status": "OK"}
     else:
         return {"status" : "Клиент уже существует"}
