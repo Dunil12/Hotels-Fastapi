@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile
+from fastapi import APIRouter
 
 router = APIRouter(prefix="/images", tags=["Изображения отелей"])
 

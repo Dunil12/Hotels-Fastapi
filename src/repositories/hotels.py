@@ -1,13 +1,13 @@
 from datetime import date
 
+from sqlalchemy import select
+
+from first_project.src.exceptions import CheckinDateLaterThanCheckoutDateException, ObjectNotFoundException
 from first_project.src.models.rooms import RoomsOrm
 from first_project.src.repositories.utils import rooms_ids_for_booking
 from first_project.src.schemas.hotels import Hotel
-from sqlalchemy import select, insert
-
 from first_project.src.models.hotels import HotelsOrm
 from first_project.src.repositories.base import BaseRepository
-from first_project.src.schemas.hotels import HotelPatch
 
 
 class HotelsRepository(BaseRepository):
@@ -39,7 +39,7 @@ class HotelsRepository(BaseRepository):
         result = await self.session.execute(query)
         print(query.compile(compile_kwargs={"literal_binds": True}))
         hotels = result.scalars().all()
-    
+
         return [Hotel.model_validate(hotel, from_attributes=True) for hotel in hotels]
 
     async def get_filtered_by_date(
@@ -51,6 +51,10 @@ class HotelsRepository(BaseRepository):
             date_from: date,
             date_to: date,
     ):
+        # перенести валидацию в схему Date_range
+        if date_to < date_from:
+            raise CheckinDateLaterThanCheckoutDateException
+
         rooms_ids_to_get = rooms_ids_for_booking(date_from=date_from, date_to=date_to)
 
         hotels_ids_to_get = (
@@ -73,5 +77,7 @@ class HotelsRepository(BaseRepository):
 
         result = await self.session.execute(query)
         hotels = result.scalars().all()
+        if not hotels:
+            raise ObjectNotFoundException
 
         return [Hotel.model_validate(hotel, from_attributes=True) for hotel in hotels]

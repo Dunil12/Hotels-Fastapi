@@ -1,5 +1,5 @@
-from sqlalchemy import select, insert
-from pydantic import BaseModel, EmailStr
+from sqlalchemy import select
+from pydantic import EmailStr
 
 from first_project.src.models.users import UsersOrm
 from first_project.src.repositories.base import BaseRepository

@@ -11,7 +11,7 @@ sys.path.append(str(Path(__file__).parent.parent.parent.parent))
 
 from first_project.src.database import Base
 from first_project.src.config import settings
-from first_project.src.models import *
+from first_project.src.models import * # noqa F403
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config

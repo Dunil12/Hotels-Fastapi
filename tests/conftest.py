@@ -1,15 +1,23 @@
+# ruff: noqa: E402
 import pytest
 from httpx import ASGITransport, AsyncClient
+
+from unittest import mock
+
+from typing_extensions import AsyncGenerator
+
+mock.patch("fastapi_cache.decorator.cache", lambda *args, **kwargs: lambda f: f).start()
 
 from first_project.src.api.dependencies import get_db
 from first_project.src.config import settings
 from first_project.src.database import Base, engine_null_pool, async_session_maker_null_pool
 from first_project.src.main import app
-from first_project.src.models import *
+from first_project.src.models import * # noqa: F403
 from first_project.src.repositories.hotels import HotelsRepository
 from first_project.src.repositories.rooms import RoomsRepository
 from first_project.src.utils.db_manager import DBManager
 from first_project.tests.utils.parser import Parser
+
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -49,7 +57,7 @@ async def fill_database(setup_database):
         await RoomsRepository(conn).add_batch(rooms)
 
 @pytest.fixture(scope="session")
-async def ac() -> AsyncClient:
+async def ac() -> AsyncGenerator[AsyncClient]:
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
 
@@ -60,3 +68,18 @@ async def register_user(ac, setup_database):
                       "email":"email@gmail.com",
                       "password": "password"
                   })
+
+
+@pytest.fixture(scope="session")
+async def authenticated_ac(register_user, ac):
+    response = await ac.post("/auth/login",
+                      json={
+            "email": "email@gmail.com",
+            "password": "password"},)
+
+    assert response.status_code == 200
+    assert ac.cookies["access_token"]
+
+    yield ac
+
+

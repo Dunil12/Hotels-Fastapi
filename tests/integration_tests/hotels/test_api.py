@@ -1,4 +1,3 @@
-from first_project.tests.conftest import ac
 
 async def test_get_all_hotels(ac, setup_database, fill_database):
     response = await ac.get("/hotels", params={

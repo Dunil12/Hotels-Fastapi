@@ -1,12 +1,11 @@
-from datetime import date
-from urllib.parse import uses_query
+from fastapi import HTTPException
+from sqlalchemy import select
 
-from pydantic import BaseModel
-from sqlalchemy import insert, select
-
+from first_project.src.exceptions import AllRoomsBookedException
 from first_project.src.models.bookings import BookingsOrm
 from first_project.src.repositories.base import BaseRepository
-from first_project.src.schemas.bookings import Booking
+from first_project.src.repositories.utils import rooms_ids_for_booking
+from first_project.src.schemas.bookings import Booking, BookingAdd
 
 
 class BookingsRepository(BaseRepository):
@@ -34,3 +33,17 @@ class BookingsRepository(BaseRepository):
 
         return [Booking.model_validate(booking, from_attributes=True) for booking in bookings]
 
+    async def add_booking(self, data: BookingAdd, hotel_id: int):
+        rooms_ids_to_get = rooms_ids_for_booking(
+            date_from=data.date_from,
+            date_to=data.date_to,
+            hotel_id=hotel_id,
+        )
+        rooms_ids_to_book_res = await self.session.execute(rooms_ids_to_get)
+        rooms_ids_to_book: list[int] = rooms_ids_to_book_res.scalars().all()
+
+        if data.room_id in rooms_ids_to_book:
+            new_booking = await self.add(data)
+            return new_booking
+
+        raise AllRoomsBookedException

@@ -6,16 +6,6 @@ from first_project.src.schemas.rooms import RoomAdd
 
 
 class Parser:
-    # schema = None
-    #
-    # def parse_json(self, path: str):
-    #     json_data = Path(__file__).parent.parent / f"${path}"
-    #
-    #     with json_data.open("r", encoding="utf-8") as file:
-    #         data = json.load(file)
-    #
-    #     return [self.schema(**item) for item in data]
-
 
     def parse_hotels(self):
         json_hotels = Path(__file__).parent.parent / "mock_hotels.json"

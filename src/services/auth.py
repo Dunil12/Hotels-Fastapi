@@ -1,7 +1,7 @@
 import jwt
 from datetime import timedelta, datetime, timezone
 from passlib.context import CryptContext
-from fastapi import Query, APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException
 
 from first_project.src.config import settings
 
@@ -29,3 +29,5 @@ class AuthService:
              return jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
          except jwt.exceptions.DecodeError:
              raise HTTPException(status_code=401, detail="неверный токен")
+         except jwt.exceptions.ExpiredSignatureError:
+             raise HTTPException(status_code=401, detail="авторизуйтесь снова")
