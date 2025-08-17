@@ -1,6 +1,6 @@
 import pytest
 
-from first_project.tests.conftest import get_db_null_pool
+from tests.conftest import get_db_null_pool
 
 
 @pytest.mark.parametrize(

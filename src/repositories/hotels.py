@@ -2,12 +2,12 @@ from datetime import date
 
 from sqlalchemy import select
 
-from first_project.src.exceptions import CheckinDateLaterThanCheckoutDateException, ObjectNotFoundException
-from first_project.src.models.rooms import RoomsOrm
-from first_project.src.repositories.utils import rooms_ids_for_booking
-from first_project.src.schemas.hotels import Hotel
-from first_project.src.models.hotels import HotelsOrm
-from first_project.src.repositories.base import BaseRepository
+from src.exceptions import CheckinDateLaterThanCheckoutDateException, ObjectNotFoundException
+from src.models.rooms import RoomsOrm
+from src.repositories.utils import rooms_ids_for_booking
+from src.schemas.hotels import Hotel
+from src.models.hotels import HotelsOrm
+from src.repositories.base import BaseRepository
 
 
 class HotelsRepository(BaseRepository):

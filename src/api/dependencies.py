@@ -3,9 +3,9 @@ from typing import Annotated
 from fastapi import Depends, Query, Request, HTTPException
 from pydantic import BaseModel
 
-from first_project.src.database import async_session_maker
-from first_project.src.services.auth import AuthService
-from first_project.src.utils.db_manager import DBManager
+from src.database import async_session_maker
+from src.services.auth import AuthService
+from src.utils.db_manager import DBManager
 
 
 class PaginationParams(BaseModel):

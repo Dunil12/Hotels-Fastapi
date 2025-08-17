@@ -1,4 +1,4 @@
-from first_project.src.schemas.hotels import HotelAdd
+from src.schemas.hotels import HotelAdd
 
 async def test_create_hotel(db):
     hotel_data = HotelAdd(title="title", location="location")

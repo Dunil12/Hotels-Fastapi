@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 
-from first_project.src.schemas.hotels import HotelAdd
-from first_project.src.schemas.rooms import RoomAdd
+from src.schemas.hotels import HotelAdd
+from src.schemas.rooms import RoomAdd
 
 
 class Parser:

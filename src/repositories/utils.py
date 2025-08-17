@@ -1,8 +1,8 @@
 from datetime import date
 from sqlalchemy import select, func
 
-from first_project.src.models.bookings import BookingsOrm
-from first_project.src.models.rooms import RoomsOrm
+from src.models.bookings import BookingsOrm
+from src.models.rooms import RoomsOrm
 
 
 def rooms_ids_for_booking(
@@ -44,3 +44,19 @@ def rooms_ids_for_booking(
     )
 
     return rooms_ids_to_get
+
+def today_users(
+        date_from: date,
+        date_to: date,
+        hotel_id: int,
+):
+    """
+    select bookings.user_id, bookings.room_id, users.email, users.user_name, users.first_name, users.second_name, phone_number
+    from bookings
+    join users on bookings.user_id = users.id
+    where date_from <= current_date and date_to >= current_date
+    """
+
+
+
+

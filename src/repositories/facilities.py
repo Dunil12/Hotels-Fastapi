@@ -1,8 +1,8 @@
 from sqlalchemy import delete
 
-from first_project.src.models.facilities import FacilitiesOrm, RoomsFacilitiesOrm
-from first_project.src.repositories.base import BaseRepository
-from first_project.src.schemas.facility import Facility, RoomFacility
+from src.models.facilities import FacilitiesOrm, RoomsFacilitiesOrm
+from src.repositories.base import BaseRepository
+from src.schemas.facility import Facility, RoomFacility
 
 
 class FacilitiesRepository(BaseRepository):

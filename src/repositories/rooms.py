@@ -3,11 +3,11 @@ from datetime import date
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload, joinedload
 
-from first_project.src.exceptions import CheckinDateLaterThanCheckoutDateException, ObjectNotFoundException
-from first_project.src.models.rooms import RoomsOrm
-from first_project.src.repositories.base import BaseRepository
-from first_project.src.schemas.rooms import Room, RoomWithRels
-from first_project.src.repositories.utils import rooms_ids_for_booking
+from src.exceptions import CheckinDateLaterThanCheckoutDateException, RoomNotFoundException
+from src.models.rooms import RoomsOrm
+from src.repositories.base import BaseRepository
+from src.schemas.rooms import Room, RoomWithRels
+from src.repositories.utils import rooms_ids_for_booking
 
 
 class RoomsRepository(BaseRepository):
@@ -35,7 +35,7 @@ class RoomsRepository(BaseRepository):
         res = [RoomWithRels.model_validate(model, from_attributes=True) for model in result.unique().scalars().all()]
 
         if not res:
-            raise ObjectNotFoundException
+            raise RoomNotFoundException
 
         return res
         # return [RoomWithRels.model_validate(model, from_attributes=True) for model in result.unique().scalars().all()]

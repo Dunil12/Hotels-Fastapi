@@ -1,4 +1,7 @@
 import redis.asyncio as redis
+import logging
+
+from src.config import settings
 
 
 class RedisManager:
@@ -9,13 +12,14 @@ class RedisManager:
 
     async def connect(self):
         """Асинхронное подключение к Redis."""
+        logging.info(f"Подключение к redis ... host={settings.REDIS_HOST}, port={settings.REDIS_PORT}")
         self.redis = await redis.Redis(host=self.host, port=self.port)
         # Можно проверить соединение
         try:
             await self.redis.ping()
-            print("Connected to Redis")
+            logging.info(f"Подключение к redis успешно, host={settings.REDIS_HOST}, port={settings.REDIS_PORT}")
         except Exception as e:
-            print(f"Failed to connect to Redis: {e}")
+            logging.error(f"Failed to connect to Redis: {e}")
 
     async def set(self, key, value, expire: int = None):
         """Установить значение по ключу."""

@@ -30,5 +30,10 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
 
+    EMAIL_SENDER: str
+    EMAIL_PASSWORD: str
+    EMAIL_HOST: str
+    EMAIL_PORT: int
+
 
 settings = Settings()

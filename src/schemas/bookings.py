@@ -1,9 +1,8 @@
 import typing
-
 from datetime import date
-
-from fastapi import HTTPException
 from pydantic import BaseModel, field_validator
+
+from src.exceptions import CheckinDateLaterThanCheckoutDateHTTPException
 
 if typing.TYPE_CHECKING:
     from pydantic_core.core_schema import ValidationInfo
@@ -22,10 +21,7 @@ class BookingAddRequest(BaseModel):
         """
         date_from = info.data.get("date_from")
         if date_from and date_to < date_from:
-            raise HTTPException(
-                status_code=400,
-                detail="Дата заезда позже даты выезда"
-            )
+            raise CheckinDateLaterThanCheckoutDateHTTPException
         return date_to
 
 class BookingAdd(BookingAddRequest):

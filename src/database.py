@@ -2,7 +2,7 @@ from sqlalchemy import NullPool
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
-from first_project.src.config import settings
+from src.config import settings
 
 
 

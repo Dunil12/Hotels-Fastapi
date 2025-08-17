@@ -1,10 +1,13 @@
 from datetime import date
 
 from fastapi import Query, APIRouter, HTTPException
+from sqlalchemy.exc import IntegrityError
 
-from first_project.src.api.dependencies import PaginationDep, DBDep
-from first_project.src.exceptions import CheckinDateLaterThanCheckoutDateException, ObjectNotFoundException
-from first_project.src.schemas.hotels import HotelAdd, HotelPatch
+from src.api.dependencies import PaginationDep, DBDep
+from src.exceptions import CheckinDateLaterThanCheckoutDateException, ObjectNotFoundException, \
+    HotelNotFoundHTTPException, CheckinDateLaterThanCheckoutDateHTTPException
+from src.schemas.hotels import HotelAdd, HotelPatch
+from src.services.hotels import HotelService
 
 router = APIRouter(prefix="/hotels", tags=["Отели"])
 
@@ -19,22 +22,20 @@ async def get_all_hotels(
     date_from: date = Query(example="2025-05-10"),
     date_to: date = Query(example="2025-05-11"),
 ):
-    limit = pagination.per_page or 5
-    offset = limit * (pagination.page - 1)
-
     try:
-        return await db.hotels.get_filtered_by_date(
+        hotels = await HotelService(db).get_hotels(
+            pagination=pagination,
             title=title,
             location=location,
-            limit=limit,
-            offset=offset,
             date_from=date_from,
             date_to=date_to,
         )
     except CheckinDateLaterThanCheckoutDateException:
-        raise HTTPException(status_code=400, detail="Дата заезда позже даты выезда")
+        raise CheckinDateLaterThanCheckoutDateHTTPException
     except ObjectNotFoundException:
-        raise HTTPException(status_code=400, detail="Отель не найден")
+        raise HotelNotFoundHTTPException
+
+    return {"status": "OK", "data": hotels}
 
 @router.get("/{hotel_id}", summary="Получение отеля по id",)
 async def get_hotel(
@@ -42,31 +43,30 @@ async def get_hotel(
         hotel_id: int,
 ):
     try:
-        return await db.hotels.get_one(**{"id": hotel_id})
+        return await HotelService(db).get_hotel_by_id(hotel_id=hotel_id)
     except ObjectNotFoundException:
-        raise HTTPException(status_code=400, detail="Отель не найден")
+        raise HotelNotFoundHTTPException
+
+
+@router.post("")
+async def create_hotel(
+    db: DBDep,
+    hotel_data: HotelAdd
+):
+    hotel = await HotelService(db).create_hotel(hotel_data=hotel_data)
+
+    return {"status": "OK", "data": hotel}
 
 
 # @router.post("")
-# async def create_hotel(
+# async def create_hotels(
 #     db: DBDep,
-#     hotel_data: HotelAdd
+#     hotel_data: list[HotelAdd]
 # ):
-#     hotel = await db.hotels.add(hotel_data)
+#     hotel = await db.hotels.add_batch(hotel_data)
 #     await db.commit()
-#     print(hotel)
 #
 #     return {"status": "OK"}
-
-@router.post("")
-async def create_hotels(
-    db: DBDep,
-    hotel_data: list[HotelAdd]
-):
-    hotel = await db.hotels.add_batch(hotel_data)
-    await db.commit()
-
-    return {"status": "OK"}
 
 
 @router.delete("/{hotel_id}")
@@ -76,9 +76,14 @@ async def delete_hotel(
     title: str | None = Query(None),
     location: str | None = Query(None),
 ):
-    await db.hotels.delete(id=hotel_id, title=title, location=location)
-    await db.commit()
-    return {"status" : "OK"}
+    try:
+        await HotelService(db).delete_hotel(
+            hotel_id=hotel_id,
+            title=title,
+            location=location
+        )
+    except HotelNotFoundHTTPException:
+        raise HotelNotFoundHTTPException
 
 
 @router.patch("/{hotel_id}")
@@ -89,10 +94,12 @@ async def change_hotel(
     title: str | None = Query(None),
     location: str | None = Query(None),
 ):
-    if hotel_id or title or location:
-        hotel = await db.hotels.change(new_hotel_data, id=hotel_id, title=title, location=location)
-        await db.commit()
-        print(hotel)
-        return hotel
-    else:
-        return {"status" : "Fill one or more required fields"}
+    try:
+        await HotelService(db).change_hotel(
+            new_hotel_data=new_hotel_data,
+            hotel_id=hotel_id,
+            title=title,
+            location=location,
+        )
+    except HotelNotFoundHTTPException:
+        raise HotelNotFoundHTTPException

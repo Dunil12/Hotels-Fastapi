@@ -1,11 +1,11 @@
 from fastapi import HTTPException
 from sqlalchemy import select
 
-from first_project.src.exceptions import AllRoomsBookedException
-from first_project.src.models.bookings import BookingsOrm
-from first_project.src.repositories.base import BaseRepository
-from first_project.src.repositories.utils import rooms_ids_for_booking
-from first_project.src.schemas.bookings import Booking, BookingAdd
+from src.exceptions import AllRoomsBookedException
+from src.models.bookings import BookingsOrm
+from src.repositories.base import BaseRepository
+from src.repositories.utils import rooms_ids_for_booking
+from src.schemas.bookings import Booking, BookingAdd
 
 
 class BookingsRepository(BaseRepository):

@@ -3,7 +3,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column
 
-from first_project.src.database import Base
+from src.database import Base
 
 
 class BookingsOrm(Base):

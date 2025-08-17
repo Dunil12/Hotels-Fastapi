@@ -1,8 +1,8 @@
-from first_project.src.models.hotels import HotelsOrm
-from first_project.src.models.rooms import RoomsOrm
-from first_project.src.models.users import UsersOrm
-from first_project.src.models.bookings import BookingsOrm
-from first_project.src.models.facilities import FacilitiesOrm
+from src.models.hotels import HotelsOrm
+from src.models.rooms import RoomsOrm
+from src.models.users import UsersOrm
+from src.models.bookings import BookingsOrm
+from src.models.facilities import FacilitiesOrm
 
 
 __all__ = [

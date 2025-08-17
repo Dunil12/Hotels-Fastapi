@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from first_project.src.schemas.facility import Facility
+from src.schemas.facility import Facility
 
 
 class RoomAddRequest(BaseModel):

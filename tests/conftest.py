@@ -8,15 +8,15 @@ from typing_extensions import AsyncGenerator
 
 mock.patch("fastapi_cache.decorator.cache", lambda *args, **kwargs: lambda f: f).start()
 
-from first_project.src.api.dependencies import get_db
-from first_project.src.config import settings
-from first_project.src.database import Base, engine_null_pool, async_session_maker_null_pool
-from first_project.src.main import app
-from first_project.src.models import * # noqa: F403
-from first_project.src.repositories.hotels import HotelsRepository
-from first_project.src.repositories.rooms import RoomsRepository
-from first_project.src.utils.db_manager import DBManager
-from first_project.tests.utils.parser import Parser
+from src.api.dependencies import get_db
+from src.config import settings
+from src.database import Base, engine_null_pool, async_session_maker_null_pool
+from src.main import app
+from src.models import * # noqa: F403
+from src.repositories.hotels import HotelsRepository
+from src.repositories.rooms import RoomsRepository
+from src.utils.db_manager import DBManager
+from tests.utils.parser import Parser
 
 
 

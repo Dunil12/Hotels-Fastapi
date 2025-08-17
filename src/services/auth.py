@@ -3,12 +3,13 @@ from datetime import timedelta, datetime, timezone
 from passlib.context import CryptContext
 from fastapi import APIRouter, HTTPException
 
-from first_project.src.config import settings
+from src.config import settings
+from src.services.base import BaseService
 
-router = APIRouter(prefix="/auth", tags=["Аутентификация и авторизация"])
+# router = APIRouter(prefix="/auth", tags=["Аутентификация и авторизация"])
 
 
-class AuthService:
+class AuthService(BaseService):
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     def hash_password(self, password: str) -> str:

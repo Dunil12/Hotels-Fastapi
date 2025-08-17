@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Подтверждение бронирования</title>
+</head>
+<body>
+    <h1>Подтверждение бронирования #{{ booking_id }}</h1>
+    <p>Уважаемый клиент,</p>
+    <p>Ваше бронирование успешно создано!</p>
+    <ul>
+        <li><strong>ID брони:</strong> {{ booking_id }}</li>
+        <li><strong>Отель:</strong> {{ hotel_name }}</li>
+        <li><strong>Номер:</strong> {{ room_name }}</li>
+        <li><strong>Дата заезда:</strong> {{ date_from }}</li>
+        <li><strong>Дата выезда:</strong> {{ date_to }}</li>
+        <li><strong>Стоимость:</strong> {{ price }} руб.</li>
+    </ul>
+    <p>Спасибо за выбор нашего сервиса!</p>
+</body>
+</html>

@@ -1,0 +1,35 @@
+services:
+  booking_back_service:
+    ports:
+      - "7777:8000"
+    container_name: "booking_back"
+    build:
+      context: .
+    networks:
+      - myNetwork
+    env_file:
+      - .env
+
+  booking_celery_worker_service:
+    build:
+      context: .
+    container_name: "booking_celery_worker"
+    networks:
+      - myNetwork
+    env_file:
+      - .env
+    command: "celery --app=src.tasks.celery_app:celery_instance worker -l INFO"
+
+networks:
+  myNetwork:
+    external: true
+
+#  booking_celery_beat_service:
+#    build:
+#      context: .
+#    container_name: "booking_celery_beat"
+#    networks:
+#      - myNetwork
+#    env_file:
+#      - .env
+#    command: "celery --app=src.tasks.celery_app:celery_instance beat -l INFO"

@@ -1,9 +1,10 @@
+import logging
 from sqlalchemy import select, insert, update, delete
-
 from pydantic import BaseModel
 from sqlalchemy.exc import NoResultFound, IntegrityError
+from asyncpg.exceptions import UniqueViolationError
 
-from first_project.src.exceptions import ObjectNotFoundException, ObjectAlreadyExistException
+from src.exceptions import ObjectNotFoundException, ObjectAlreadyExistException
 
 
 class BaseRepository:
@@ -41,6 +42,7 @@ class BaseRepository:
         try:
             model = result.scalars().one()
         except NoResultFound:
+            logging.exception(f"Объект не найден")
             raise ObjectNotFoundException
 
         return self.schema.model_validate(model, from_attributes=True)
@@ -56,9 +58,10 @@ class BaseRepository:
         try:
             result = await self.session.execute(change_stmt)
             model = result.scalars().one()
-        except NoResultFound:#, IntegrityError]: # номер не найден
+        except NoResultFound: # номер не найден
             raise ObjectNotFoundException
         # except IntegrityError: # отель не найден
+        #     raise ObjectNotFoundException
         return self.schema.model_validate(model, from_attributes=True)
 
 
@@ -79,10 +82,15 @@ class BaseRepository:
         add_data_stmt = insert(table=self.model).values(**data.model_dump()).returning(self.model)
         try:
             result = await self.session.execute(add_data_stmt)
-        except IntegrityError:
-            raise ObjectAlreadyExistException
+            model = result.scalars().one()
+        except IntegrityError as e:
+            if isinstance(e.orig.__cause__, UniqueViolationError):
+                logging.exception(f"Не удалось добавить данные в БД, входные данные={data}")
+                raise ObjectAlreadyExistException from e
+            else:
+                logging.exception(f"Неизвестная ошибка: не удалось добавить данные в БД, входные данные={data}")
+                raise e
 
-        model = result.scalars().one()
         return self.schema.model_validate(model, from_attributes=True)
 
 
